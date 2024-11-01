@@ -1,31 +1,34 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from starlette.responses import HTMLResponse
 from user_agents import parse
+from fastapi.templating import Jinja2Templates
+from device_detector import DeviceDetector
 
 app = FastAPI()
+templates = Jinja2Templates(directory="templates")
 
-@app.get("/")
+
+
+@app.get("/", response_class=HTMLResponse)
 async def device_info(request: Request):
     user_agent = request.headers.get("User-Agent")
-    user_agent_parsed = parse(user_agent)
 
-    # Obtener el modelo del dispositivo
-    device_model = user_agent_parsed.device.family  # Esto a menudo da un nombre genérico
-    if user_agent_parsed.is_mobile:
-        device_model += f" {user_agent_parsed.device.brand}"
+    device_detector = DeviceDetector(user_agent).parse()
 
-    # Crear un diccionario con la información del dispositivo
     device_info = {
-        "is_mobile": user_agent_parsed.is_mobile,
-        "is_tablet": user_agent_parsed.is_tablet,
-        "is_pc": user_agent_parsed.is_pc,
-        "browser": user_agent_parsed.browser.family,
-        "browser_version": user_agent_parsed.browser.version_string,
-        "os": user_agent_parsed.os.family,
-        "os_version": user_agent_parsed.os.version_string,
-        "device": device_model,
+        "device_os" : device_detector.os_name(),
+        "device.os_version": device_detector.os_name(),
+        "device_engine" : device_detector.engine(),
+        "device_brand": device_detector.device_brand(),
+        "device_model" : device_detector.device_model(),
+        "device_type" : device_detector.device_type()
+
     }
-    return JSONResponse(content=device_info)
+
+
+
+    return templates.TemplateResponse("Home.html", {"request":request, "device_info" : device_info})
 
 
 

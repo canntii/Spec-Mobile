@@ -1,10 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Information</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-$END$
+<div class="container mt-5">
+    <h3 class="text-center">Device Information</h3>
+    <div class="card text-center mt-3">
+        <div class="card-header">
+            Device Info
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                {% for key, value in device_info.items() %}
+                    <li class="list-group-item">
+                        <strong>{{ key | capitalize }}:</strong> {{ value }}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
 </body>
 </html>
