@@ -22,8 +22,9 @@ async def device_info(request: Request):
         "device_engine" : device_detector.engine(),
         "device_brand": device_detector.device_brand(),
         "device_model" : device_detector.device_model(),
-        "device_type" : device_detector.device_type()
-
+        "device_type" : device_detector.device_type(),
+        "device feature" : device_detector.android_feature_phone(),
+        "device top" : device_detector.android_device_type()
     }
 
 
