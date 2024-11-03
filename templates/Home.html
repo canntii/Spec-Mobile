@@ -15,11 +15,13 @@
         </div>
         <div class="card-body">
             <ul class="list-group">
-                {% for key, value in device_info.items() %}
-                    <li class="list-group-item">
-                        <strong>{{ key | capitalize }}:</strong> {{ value }}
-                    </li>
-                {% endfor %}
+                <li class="list-group-item">
+                    <strong>Prueba</strong> Prueba
+                </li>
+                <!-- Mostrar el mensaje aquí -->
+                <li class="list-group-item">
+                    <strong>Resultado:</strong> {{ message }}
+                </li>
             </ul>
         </div>
     </div>
