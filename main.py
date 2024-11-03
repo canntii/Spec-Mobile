@@ -1,24 +1,27 @@
 import base64
-import os
+from idlelib.iomenu import encoding
 import numpy as np
+from face_recognition import face_landmarks, face_encodings
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, storage, firestore
 import face_recognition
 import cv2
 import requests
 from io import BytesIO
+from fastapi.encoders import jsonable_encoder
 
-cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin.initialize_app(cred, {'storageBucket': os.getenv('STORAGE_BUCKET')})
-
-db = firestore.client()
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
+
+cred = credentials.Certificate("serviceAccountKey.json")
+firebase_admin.initialize_app(cred, {'storageBucket': 'gs://userface-b47eb.firebasestorage.app'})
+db = firestore.client()
+
 
 # Modelo para la imagen enviada desde el frontend
 class ImageData(BaseModel):
@@ -43,14 +46,19 @@ def process_image_from_base64(image_base64):
 
 
 def get_user_image_from_firebase(id):
+
+
     user_ref = db.collection("user").document(id)
     user_data = user_ref.get().to_dict()
+
 
     if not user_data or "imageUrl" not in user_data:
         raise HTTPException(status_code=404, detail="Usuario o imagen no encontrado")
 
     image_url = user_data["imageUrl"]
     response = requests.get(image_url)
+
+    print(response)
 
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail="Error al obtener la imagen de Firebase")
@@ -70,11 +78,8 @@ async def compare_images(image_data: ImageData):
     try:
 
         tolerance = 0.4
-
         # Obtener la codificación facial del usuario desde Firebase
-        user_firebase_face_encoding = get_user_image_from_firebase(os.getenv('BRYAN_USER_ID'))
-
-
+        user_firebase_face_encoding = get_user_image_from_firebase("LvPZakIp67d9wl3soXfJ")
 
         # Procesar la imagen del usuario desde base64
         user_face_encodings = process_image_from_base64(image_data.user_image_base64)
@@ -87,10 +92,10 @@ async def compare_images(image_data: ImageData):
         user_face_encoding = user_face_encodings[0]
 
         # Comparar las codificaciones faciales
-        results = face_recognition.compare_faces([user_firebase_face_encoding], user_face_encoding, tolerance= tolerance)
+        results = face_recognition.compare_faces([user_firebase_face_encoding], user_face_encoding, tolerance = tolerance)
 
-        # Determinar si hay coincidencia
-        match = bool(results[0])  # True si hay coincidencia, False si no
+        # Determinar si hay coincidencia (convertir a booleano nativo)
+        match = bool(results[0])  # Convertir a bool nativo
 
         # Mensaje basado en el resultado de la comparación
         if match:
@@ -117,7 +122,3 @@ async def device_info(request: Request):
 @app.get("/video", response_class=HTMLResponse)
 async def video_info(request: Request):
     return templates.TemplateResponse("Video.html", {"request": request})
-
-
-#DOCUMENTATION TEMPLATES TEMPLATESTEMPLATESTEMPLATESTEMPLATESTEMPLATESTEMPLATESTEMPLATESTEMPLATESTEMPLATESTEMPLATESTEMPLATES
-#STABLE VERSION STABLE VERSION STABLE VERSION STABLE VERSION STABLE VERSION STABLE VERSION STABLE VERSION
