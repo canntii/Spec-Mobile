@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Captura de Imagen</title>
+    <title>Captura de Imagen con ubicacion</title>
+    <script src="/assets/main.js" defer></script>
 </head>
 <body>
     <h1>Captura tu imagen</h1>
@@ -12,53 +13,7 @@
     <div id="message" style="margin-top: 20px; font-size: 1.2em; color: #333;"></div>
     <canvas id="canvas" style="display: none;"></canvas>
 
-<script>
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const context = canvas.getContext('2d');
-const messageDiv = document.getElementById('message');
 
-// Acceder a la cámara
-navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
-        video.srcObject = stream;
-    })
-    .catch(err => {
-        console.error("Error al acceder a la cámara: ", err);
-        messageDiv.textContent = 'No se pudo acceder a la cámara.';
-    });
-
-// Capturar imagen y enviar al backend
-document.getElementById('capture').addEventListener('click', () => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageDataUrl = canvas.toDataURL('image/png');
-
-    fetch('http://127.0.0.1:8000/compare', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user_image_base64: imageDataUrl })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Error en la respuesta del servidor: ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(data => {
-        // Ajustar el mensaje para incluir el resultado de la comparación
-        const resultMessage = data.comparison_result || 'Comparación realizada con éxito';
-        messageDiv.textContent = `${data.message || 'Comparación realizada con éxito'}: ${resultMessage}`;
-    })
-    .catch((error) => {
-        console.error('Error:', error);
-        messageDiv.textContent = 'Ocurrió un error al procesar la imagen.';
-    });
-});
-</script>
 
 
 
