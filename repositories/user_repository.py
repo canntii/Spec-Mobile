@@ -1,57 +1,21 @@
 from abc import ABC, abstractmethod
-from models.models import User, ImageData
 import face_recognition
 from io import BytesIO
 from fastapi import HTTPException
 import requests
 
+
 class UserRepository(ABC):
-
-    @abstractmethod
-    def create_user(self, user: User) -> User:
-        pass
-
-    @abstractmethod
-    def get_user(self, user_id: str) -> User:
-        pass
-
-    @abstractmethod
-    def update_user(self, user_id: str, user: User) -> User:
-        pass
-
-    @abstractmethod
-    def delete_user(self, user_id: str) -> None:
-        pass
 
     @abstractmethod
     def get_user_image_from_firebase(self, id: str):
         pass
 
-
 class FirebaseUserRepository(UserRepository):
-    def __init__(self, db):
+    def __init__(self, db, bucket):
         self.db = db
+        self.bucket = bucket
 
-    def create_user(self, user: User) -> User:
-        user_data = user.model_dump(exclude={'id'})  # Excluir el ID si es necesario
-        user_ref = self.db.collection("users").add(user_data)
-        user.id = user_ref.id  # Asignar el ID generado por Firestore
-        return user
-
-    def get_user(self, user_id: str) -> User:
-        user_ref = self.db.collection("users").document(user_id).get()
-        if user_ref.exists:
-            return User(id=user_ref.id, **user_ref.to_dict())
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-
-    def update_user(self, user_id: str, user: User) -> User:
-        user_data = user.model_dump(exclude={'id'})
-        self.db.collection("users").document(user_id).update(user_data)
-        user.id = user_id  # Asegurarse de que el ID se mantenga
-        return user
-
-    def delete_user(self, user_id: str) -> None:
-        self.db.collection("users").document(user_id).delete()
 
     def get_user_image_from_firebase(self, id: str):
         try:
@@ -78,4 +42,3 @@ class FirebaseUserRepository(UserRepository):
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
-

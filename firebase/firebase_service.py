@@ -4,7 +4,7 @@ from firebase_admin import credentials, firestore, storage
 class FirebaseService:
     _instance = None
     _service_account_key = "serviceAccountKey.json"
-    _storage_bucket = "gs://userface-b47eb.firebasestorage.app"
+    _storage_bucket = "userface-b47eb.firebasestorage.app"
 
     def __new__(cls):
         if cls._instance is None:
@@ -14,6 +14,7 @@ class FirebaseService:
             firebase_admin.initialize_app(cred, {'storageBucket': cls._storage_bucket})
             cls._instance.db = firestore.client()
             cls._instance.bucket = storage.bucket()
+            print(f"Bucket: {cls._instance.bucket.name}")
         return cls._instance
 
     def get_db(self):
