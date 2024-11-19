@@ -1,27 +1,12 @@
 import base64
-from abc import ABC, abstractmethod
 import cv2
 import face_recognition
 from io import BytesIO
 from fastapi import HTTPException
 import requests
 import numpy as np
-import models
-from models.models import ImageResponse
-import json
 
-
-class UserRepository(ABC):
-
-    @abstractmethod
-    def get_user_image_from_firebase(self, id: str):
-        pass
-
-class FirebaseUserRepository(UserRepository):
-    def __init__(self, db, bucket):
-        self.db = db
-        self.bucket = bucket
-
+class UserRepository():
 
     def get_user_image_from_firebase(self, id: str):
         try:
@@ -49,8 +34,8 @@ class FirebaseUserRepository(UserRepository):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
 
-
-    def calculate_brightness(self, imagen_base64: str) -> str:
+    @staticmethod
+    def calculate_brightness(imagen_base64: str) -> str:
 
         #Decodifica la imagen de base64 a un arreglo de NumPy
         image_bytes = base64.b64decode(imagen_base64)
@@ -72,7 +57,8 @@ class FirebaseUserRepository(UserRepository):
         else :
             return "Brillo adecuado"
 
-    def isFace(self, image_base64: str) ->bool:
+    @staticmethod
+    def isFace(image_base64: str) ->bool:
 
         # Cargar el clasificador Haar para detección de rostros
         face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -94,7 +80,8 @@ class FirebaseUserRepository(UserRepository):
         else:
             return False
 
-    def buildAnswer(self, calculate_brightness: str, isFace: bool) -> dict:
+    @staticmethod
+    def buildAnswer(calculate_brightness: str, isFace: bool) -> dict:
 
         return{
             "message" : calculate_brightness,

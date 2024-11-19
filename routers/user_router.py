@@ -1,8 +1,7 @@
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from models.models import ImageData
-from repositories.user_repository import FirebaseUserRepository
-from firebase.firebase_service import FirebaseService
+from repositories.user_repository import  UserRepository
 import time
 import face_recognition
 from services.utilities import process_image_from_base64
@@ -10,8 +9,8 @@ from fastapi import APIRouter, HTTPException, WebSocketException
 
 router = APIRouter()
 
-def setup_user_router(firebase_service: FirebaseService):
-    user_repository = FirebaseUserRepository(firebase_service.get_db(), firebase_service.get_bucket())
+def setup_user_router():
+    user_repository = UserRepository()
 
     @router.post("/compare")
     async def compare_images(user_id: str, image_data: ImageData):
