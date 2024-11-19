@@ -1,8 +1,14 @@
+import base64
 from abc import ABC, abstractmethod
+import cv2
 import face_recognition
 from io import BytesIO
 from fastapi import HTTPException
 import requests
+import numpy as np
+import models
+from models.models import ImageResponse
+import json
 
 
 class UserRepository(ABC):
@@ -42,3 +48,56 @@ class FirebaseUserRepository(UserRepository):
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error interno: {str(e)}")
+
+
+    def calculate_brightness(self, imagen_base64: str) -> str:
+
+        #Decodifica la imagen de base64 a un arreglo de NumPy
+        image_bytes = base64.b64decode(imagen_base64)
+        image_np = np.frombuffer(image_bytes,dtype=np.uint8)
+        image = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+
+        #Convertir a espacio de color HSV
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        bright = np.mean(hsv[:,:,2]) #canal de V
+
+        #Umbral de brillo
+        brightTop = 200
+        brightFloor = 125
+
+        if bright > brightTop:
+            return "Brillo muy alto"
+        elif bright < brightFloor :
+            return "Brillo bajo"
+        else :
+            return "Brillo adecuado"
+
+    def isFace(self, image_base64: str) ->bool:
+
+        # Cargar el clasificador Haar para detección de rostros
+        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
+        #Decodificar la imagen
+        image_bytes = base64.b64decode(image_base64)
+        image_np = np.frombuffer(image_bytes, dtype=np.uint8)
+        image = cv2.imdecode(image_np, cv2.IMREAD_COLOR)
+
+        #Convertir la imagen a escala de grises
+        imageGray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        #Detectar rostros
+        faces = face_cascade.detectMultiScale(imageGray, 1.1, 4)
+
+        #Verificar si se detectaron rostros
+        if len(faces) > 0:
+            return True
+        else:
+            return False
+
+    def buildAnswer(self, calculate_brightness: str, isFace: bool) -> dict:
+
+        return{
+            "message" : calculate_brightness,
+            "faces" : isFace
+        }
+

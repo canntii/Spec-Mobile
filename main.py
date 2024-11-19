@@ -7,10 +7,10 @@ app = FastAPI()
 
 #Instanciar los servicios necesarios
 firebase_service = FirebaseService()
-security = HTTPBearer()
 
 # Configurar los routers
 user_router = setup_user_router(firebase_service)
 app.include_router(user_router)
+
 
 
