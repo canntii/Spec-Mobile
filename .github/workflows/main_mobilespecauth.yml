@@ -21,12 +21,16 @@ jobs:
       - name: Install cmake (if needed by dependencies)
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake || true  # Fuerza la instalación incluso si hay un error
+          sudo apt-get install -y cmake
 
-      - name: Install dependencies
+      - name: Verify CMake installation 
+        run: cmake --version
+
+      - name: Install system dependencies
         run: |
-          sudo apt-get install -y libgl1-mesa-glx
-          sudo apt-get install -y libglib2.0-0 libsm6 libxext6 libxrender1
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-glx libglib2.0-0 libsm6 libxext6 libxrender1
+
 
       - name: Create and start virtual environment
         run: |
