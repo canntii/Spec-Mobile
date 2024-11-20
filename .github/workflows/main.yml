@@ -14,15 +14,7 @@ jobs:
       id-token: write   # Permite que se escriba el id-token para autenticación
 
     steps: 
-      #1. Configurar el repositorio
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      #2. Construir la imagen, ahora con el contexto del directorio actual
-      - name: Build Docker image
-        run: |
-          docker build -t findspecs:latest .
-
+      
       # 3. Iniciar sesión en el Azure Container Registry
       - name: Login to Azure Container Registry
         uses: azure/docker-login@v1
@@ -31,12 +23,6 @@ jobs:
           username: ${{ secrets.AZURE_ACR_USERNAME }}
           password: ${{ secrets.AZURE_ACR_PASSWORD }}
 
-
-      # 4. Subir la imagen al ACR
-      - name: Push Docker image to Azure Container Registry
-        run: |
-          docker tag findspecs:latest ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/specsmobile:latest
-          docker push ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/specsmobile:latest
 
       # 5. Iniciar sesión en Azure
       - name: Login to Azure
