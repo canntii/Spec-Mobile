@@ -14,10 +14,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    #2. Construir la imagen, asumiendo que ya azure tiene mis credenciales
+    #2. Construir la imagen, ahora con el contexto del directorio actual
     - name: Build Docker image
-      run: | 
-        docker build -t findspecs:latest
+      run: |
+        docker build -t findspecs:latest .
 
     # 3. Iniciar sesión en el Azure Container Registry
     - name: Login to Azure Container Registry
@@ -27,11 +27,10 @@ jobs:
         username: ${{ secrets.AZURE_ACR_USERNAME }}
         password: ${{ secrets.AZURE_ACR_PASSWORD }}
 
-
     # 4. Subir la imagen al ACR
     - name: Push Docker image to Azure Container Registry
       run: |
-        docker tag specsmobile:latest ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/specsmobile:latest
+        docker tag findspecs:latest ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/specsmobile:latest
         docker push ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/specsmobile:latest
 
     # 5. Desplegar en Azure App Service
@@ -41,5 +40,3 @@ jobs:
         app-name: mobileSpecAuth
         slot-name: production
         images: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/specsmobile:latest
-     
-    
