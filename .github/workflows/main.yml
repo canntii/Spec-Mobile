@@ -23,11 +23,11 @@ jobs:
           password: ${{ secrets.AZURE_ACR_PASSWORD }}
 
 
-   # 5. Iniciar sesión en Azure (utilizando Managed Identity para autenticar)
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          identity: true  # Usar la Managed Identity de la Web App para autenticar
+     # 5. Login a Azure usando Managed Identity para Web App
+      - name: Login to Azure using Managed Identity
+        run: |
+          az login --identity
+          az account set --subscription ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       # 6. Desplegar en Azure App Service
       - name: Deploy to Azure App Service
