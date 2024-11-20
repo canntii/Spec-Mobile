@@ -1,12 +1,19 @@
 
 
 
-#Instalar cmake por si no esta instalado
-if ! command -v cmake &> /de/null
+# Verificar si CMake está instalado, e instalarlo si no lo está
+if ! command -v cmake &> /dev/null
 then
-  echo "CMake no encontrado, procediendo con instalacion..."
+  echo "CMake no encontrado, procediendo con instalación..."
   apt-get install -y cmake
+else
+  echo "CMake ya está instalado."
 fi
+
+
+
+
+pip install --upgrade pip setuptools wheel
 
 source /home/site/wwwroot/.venv/Scripts/activate
 
