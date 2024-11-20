@@ -10,6 +10,8 @@ else
   echo "CMake ya está instalado."
 fi
 
+# Añadir /usr/local/bin al PATH
+export PATH=/usr/local/bin:$PATH
 # Actualizar pip, setuptools y wheel
 pip install --upgrade pip setuptools wheel
 
