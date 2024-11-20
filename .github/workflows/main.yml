@@ -34,6 +34,6 @@ jobs:
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v2
         with:
-          app-name: mobileSpecAuth
+          app-name: mobilespecauth
           slot-name: production
           images: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/specsmobile:latest
