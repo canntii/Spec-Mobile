@@ -22,6 +22,15 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install cmake (if needed by dependencies)
+        run: |
+          sudo apt-get update && apt-get install -y cmake
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y libgl1-mesa-glx
+          sudo apt-get install -y libglib2.0-0 libsm6 libxext6 libxrender1
+
       - name: Create and start virtual environment
         run: |
           python -m venv venv
