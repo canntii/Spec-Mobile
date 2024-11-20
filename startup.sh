@@ -2,22 +2,7 @@
 
 
 # Actualizar índices de paquetes e instalar CMake si no está presente
-if ! command -v cmake &> /dev/null
-then
-  echo "CMake no encontrado, procediendo con actualización de índices e instalación..."
-  apt-get update -y && apt-get install -y cmake
-else
-  echo "CMake ya está instalado."
-fi
-
-# Añadir /usr/local/bin al PATH
-export PATH=/usr/local/bin:$PATH
-# Actualizar pip, setuptools y wheel
-pip install --upgrade pip setuptools wheel
-
-
-
-pip install --upgrade pip setuptools wheel
+apt-get update && apt-get install -y cmake
 
 source /home/site/wwwroot/.venv/Scripts/activate
 

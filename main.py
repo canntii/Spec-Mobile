@@ -1,4 +1,3 @@
-
 from routers.user_router import setup_user_router
 from fastapi import FastAPI
 

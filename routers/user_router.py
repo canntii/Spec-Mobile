@@ -1,11 +1,11 @@
 from starlette.websockets import WebSocket, WebSocketDisconnect
-
 from models.models import ImageData
 from repositories.user_repository import  UserRepository
 import time
 import face_recognition
-from services.utilities import process_image_from_base64
 from fastapi import APIRouter, HTTPException, WebSocketException
+
+from services.utilities import process_image_from_base64
 
 router = APIRouter()
 

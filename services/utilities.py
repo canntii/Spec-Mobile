@@ -3,8 +3,8 @@ import numpy as np
 from fastapi import HTTPException
 import face_recognition
 import cv2
-from firebase_admin import auth
 
+@staticmethod
 def process_image_from_base64(image_base64):
     try:
         # Decodificar la imagen de base64
@@ -21,10 +21,3 @@ def process_image_from_base64(image_base64):
             raise ValueError("No se encontraron rostros en la imagen")
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error al procesar la imagen: {str(e)}")
-
-async def verify_token(token:str):
-    try:
-        decoded_token = auth.verify_id_token(token)
-        return decoded_token
-    except Exception:
-        raise  HTTPException(status_code=401, detail="Invalidd authentication credentials")
