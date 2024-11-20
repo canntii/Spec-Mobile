@@ -38,3 +38,4 @@ jobs:
           app-name: mobileSpecAuth
           slot-name: production
           images: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/specsmobile:latest
+          identity: true
