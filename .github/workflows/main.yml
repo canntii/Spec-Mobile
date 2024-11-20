@@ -15,23 +15,19 @@ jobs:
 
     steps: 
       
-# Paso 1: Iniciar sesión en Azure usando la Managed Identity
-      - name: Login to Azure using Managed Identity
+      # 4. Iniciar sesión en Azure usando Service Principal
+      - name: Login to Azure using Service Principal
         uses: azure/login@v2
         with:
-          identity: true  # Usar Managed Identity para la autenticación
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      # Paso 2: Autenticarse en Azure Container Registry usando Managed Identity
-      - name: Login to Azure Container Registry
-        uses: azure/docker-login@v1
-        with:
-          login-server: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}
-          identity: true  # Usar Managed Identity para la autenticación
-
-      # Paso 3: Desplegar en Azure App Service
+      # 5. Desplegar en Azure App Service
       - name: Deploy to Azure App Service
         uses: azure/webapps-deploy@v2
         with:
-          app-name: mobileSpecAuth
-          slot-name: production
+          app-name: mobileSpecAuth  # Nombre de tu Web App
+          slot-name: production     # El nombre del slot de despliegue (production o el que estés usando)
           images: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/specsmobile:latest
