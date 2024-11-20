@@ -23,12 +23,11 @@ jobs:
           password: ${{ secrets.AZURE_ACR_PASSWORD }}
 
 
-      # 5. Iniciar sesión en Azure
+   # 5. Iniciar sesión en Azure (utilizando Managed Identity para autenticar)
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          identity: true
-
+          identity: true  # Usar la Managed Identity de la Web App para autenticar
 
       # 6. Desplegar en Azure App Service
       - name: Deploy to Azure App Service
@@ -37,5 +36,5 @@ jobs:
           app-name: mobileSpecAuth
           slot-name: production
           images: ${{ secrets.AZURE_ACR_LOGIN_SERVER }}/specsmobile:latest
-          identity: true
+          identity: true  # Usar la Managed Identity para el despliegue
 
