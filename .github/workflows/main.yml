@@ -37,9 +37,9 @@ jobs:
     - name: Login to Azure
       uses: azure/login@v1
       with:
-        client-id: ${{ secrets.AZURE_CLIENT_ID }}
-        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B5620FA4DB4A4EBFBF263B115963A404 }}
+        tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D879B8B67ACA429EBE228450A018934A }}
+        subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D76BF7908646418397535D68E152177A }}
 
     # 6. Desplegar en Azure App Service
     - name: Deploy to Azure App Service
