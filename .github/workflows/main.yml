@@ -38,7 +38,7 @@ jobs:
 
       # 5. Iniciar sesión en Azure
       - name: Login to Azure
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_B5620FA4DB4A4EBFBF263B115963A404 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D879B8B67ACA429EBE228450A018934A }}
