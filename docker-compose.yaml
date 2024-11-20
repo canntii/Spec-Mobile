@@ -2,6 +2,6 @@
 services:
   web:
     build: .
-    command: sh -c "uvicorn main:app --reload"
+    command: sh -c "uvicorn main:app --reload --host 0.0.0.0"
     ports:
       - 8000:8000
