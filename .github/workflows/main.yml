@@ -24,14 +24,13 @@ jobs:
           password: ${{ secrets.AZURE_ACR_PASSWORD }}
 
 
-      # 5. Iniciar sesión en Azure
-      - name: Login to Azure using Service Principal
+       #Login a Azure usando identidad federada
+      - name: Login to Azure using Federated Identity
         uses: azure/login@v1
-        with: 
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}  # ID de cliente de tu Service Principal
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}  # ID de tu tenant
+          federated-identity-token: ${{ secrets.FEDERATED_IDENTITY_TOKEN }}  # Este secret lo maneja GitHub automáticamente
 
 
       # 6. Desplegar en Azure App Service
