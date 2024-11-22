@@ -1,7 +1,10 @@
 
 services:
   web:
-    build: .
+    image: specsmobile.azurecr.io/specsmobile:latest
     command: sh -c "uvicorn main:app --reload --host 0.0.0.0"
     ports:
-      - 8000:8000
+      - "8000:8000"
+    environment:
+      - DOCKER_USERNAME=f5d5ddea-42e6-4c90-bfa8-fb28e9ee1d0d
+      - DOCKER_PASSWORD=Beo8Q~z~I2KBcKEimoym7I5hhvN0x4h7B3NhucaG
