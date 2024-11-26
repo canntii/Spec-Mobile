@@ -2,6 +2,7 @@ import base64
 import cv2
 import face_recognition
 from io import BytesIO
+import io
 from fastapi import HTTPException
 import requests
 import numpy as np
@@ -88,3 +89,69 @@ class UserRepository():
             "faces" : isFace
         }
 
+    @staticmethod
+    def prepare_encodings(image: str) -> list:
+        try:
+            # Eliminar el prefijo 'data:image/png;base64,' si está presente
+            if image.startswith("data:image/png;base64,"):
+                image = image.split(",")[1]  # Tomar solo la parte después de la coma
+
+            # Decodificar la imagen desde base64
+            image_data = base64.b64decode(image)
+
+            # Crear un objeto BytesIO para simular un archivo
+            image_file = io.BytesIO(image_data)
+
+            # Cargar la imagen con face_recognition
+            img = face_recognition.load_image_file(image_file)
+
+            # Obtener las codificaciones faciales de la imagen
+            encodings = face_recognition.face_encodings(img)
+
+            # Verificar si se encontraron rostros
+            if len(encodings) == 0:
+                raise ValueError("No se encontraron rostros en la imagen")
+
+            # Retornar la primera codificación encontrada
+            return encodings[0]
+
+        except Exception as e:
+            print(f"Error al preparar las codificaciones: {e}")
+            return None
+    @staticmethod
+    def compare_faces(image_firebase: str, image_webcam: str) -> dict:
+        try:
+            tolerance = 0.4  # Tolerancia más baja para ser más estricto
+
+            # Decodificar y obtener codificaciones para ambas imágenes
+            encoding_firebase = UserRepository.prepare_encodings(image_firebase)
+            encoding_webcam = UserRepository.prepare_encodings(image_webcam)
+
+            # Verificar si se obtuvo la codificación facial
+            if encoding_firebase is None or len(encoding_firebase) == 0:
+                raise ValueError("No se encontraron rostros en la imagen de Firebase.")
+            if encoding_webcam is None or len(encoding_webcam) == 0:
+                raise ValueError("No se encontraron rostros en la imagen de Webcam.")
+
+
+            # Comparar los rostros usando face_recognition
+            results = face_recognition.compare_faces([encoding_firebase], encoding_webcam, tolerance=tolerance)
+
+            # Verificar si el resultado es vacío
+            if not results:
+                raise ValueError("La comparación no devolvió ningún resultado.")
+
+            # Determinar si hay una coincidencia (True o False)
+            match_result = bool(results[0])  # Convertir np.bool_ a bool
+
+            # Retornar los resultados
+            return {
+                "Message": "Comparación realizada con éxito",
+                "Match": match_result
+            }
+
+        except ValueError as ve:
+            return {"error": str(ve)}
+
+        except Exception as e:
+            return {"error": f"Error inesperado: {e}"}
